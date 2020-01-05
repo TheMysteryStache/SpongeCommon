@@ -299,6 +299,9 @@ public class SpongeCommandManager implements CommandManager {
 
     @Override
     public CommandResult process(CommandSource source, String commandLine) {
+        if (!Sponge.getServer().isMainThread()) {
+            throw new IllegalStateException("Commands can only be processed from the main thread.");
+        }
         final String[] argSplit = commandLine.split(" ", 2);
         if (ShouldFire.SEND_COMMAND_EVENT) {
             Sponge.getCauseStackManager().pushCause(source);
