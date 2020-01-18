@@ -22,34 +22,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.item.recipe.crafting;
+package org.spongepowered.common.mixin.api.mcp.item.crafting;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import org.spongepowered.common.item.util.ItemStackUtil;
-import javax.annotation.Nullable;
+import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.item.crafting.ICraftingRecipe;
+import net.minecraft.item.crafting.ShapedRecipe;
+import net.minecraft.item.crafting.ShapelessRecipe;
+import org.spongepowered.api.item.recipe.crafting.CraftingRecipe;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.common.mixin.accessor.item.crafting.ShapedRecipeAccessor;
+import org.spongepowered.common.mixin.accessor.item.crafting.ShapelessRecipeAccessor;
 
-/**
- * Delegates a custom implemented {@link org.spongepowered.api.item.recipe.crafting.Ingredient}
- */
-public class DelegateIngredient extends Ingredient {
+import java.util.Optional;
 
-    private org.spongepowered.api.item.recipe.crafting.Ingredient delegate;
-
-    private DelegateIngredient(org.spongepowered.api.item.recipe.crafting.Ingredient delegate) {
-        super(ItemStackUtil.fromSnapshotToNative(delegate.displayedItems()));
-        this.delegate = delegate;
-    }
+@Mixin(ICraftingRecipe.class)
+public interface ICraftingRecipeMixin_API<C extends CraftingInventory> extends IRecipeMixin_API<C>, CraftingRecipe {
 
     @Override
-    public boolean apply(@Nullable ItemStack item) {
-        return this.delegate.test(ItemStackUtil.fromNative(item));
-    }
-
-    public static Ingredient of(org.spongepowered.api.item.recipe.crafting.Ingredient delegate) {
-        if ((Object) delegate instanceof Ingredient) {
-            return ((Ingredient) (Object) delegate);
+    default Optional<String> getGroup() {
+        String group = "";
+        if (this instanceof ShapedRecipe) {
+            group = ((ShapedRecipeAccessor) this).accessor$getGroup();
         }
-        return new DelegateIngredient(delegate);
+        if (this instanceof ShapelessRecipe) {
+            group = ((ShapelessRecipeAccessor) this).accessor$getGroup();
+        }
+        if (group.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(group);
     }
 }

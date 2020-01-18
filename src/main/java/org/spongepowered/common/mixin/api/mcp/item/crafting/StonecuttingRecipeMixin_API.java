@@ -22,35 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.spongepowered.common.item.recipe.crafting;
+package org.spongepowered.common.mixin.api.mcp.item.crafting;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.item.crafting.ShapedRecipe;
-import net.minecraft.util.NonNullList;
-import org.spongepowered.api.CatalogType;
+import net.minecraft.item.crafting.StonecuttingRecipe;
+import org.spongepowered.api.item.recipe.single.StoneCutterRecipe;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.common.item.recipe.crafting.custom.SpongeStonecuttingRecipe;
 
-public class SpongeShapedRecipe extends ShapedRecipe implements CatalogType {
+@Mixin(value = {StonecuttingRecipe.class, SpongeStonecuttingRecipe.class})
+public abstract class StonecuttingRecipeMixin_API implements StoneCutterRecipe {
 
-    private final String id;
-
-    public SpongeShapedRecipe(String id, String groupName, int width, int height, NonNullList<Ingredient> ingredients, ItemStack itemStack) {
-        super(groupName, width, height, ingredients, itemStack);
-        this.id = id;
-    }
-
-    @Override
-    public String getId() {
-        return this.id;
-    }
-
-    @Override
-    public String getName() {
-        return this.getId();
-    }
-
-    @Override
-    public boolean isDynamic() {
-        return true; // For RecipeBook
-    }
 }
